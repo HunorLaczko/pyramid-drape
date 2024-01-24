@@ -1,0 +1,23 @@
+name: "pyramid-drape"
+services:
+  iccvw:
+    image: pyramid-drape:v1
+    container_name: pyramid-drape
+    build: .
+    ipc: host
+    tty: true
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    volumes:
+      - '..:/code'
+      - '/path/to/cloth3d_processed:/data/cloth3d_processed'
+      - '/path/to/cloth3d_registration:/data/cloth3d_registration'
+      - '/path/to/cloth3d:/data/cloth3d'
+      - '/path/to/output:/output'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
