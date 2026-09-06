@@ -227,3 +227,41 @@ block_setting_reverse = [
 config['cond_ae_static']['encoder_block_settings'] = block_setting
 config['cond_ae_static']['decoder_block_settings'] = block_setting_reverse
 config['cond_ae_static']['activation'] = 'tanh'
+
+####################### norm_sampler ############################
+# Architecture of the normal sampling CVAE (models/cvae_norm_model.py), which lets
+# scripts/generate_results.py --sample-normals synthesise the uv normals instead of
+# reading the ground truth ones.
+config['norm_sampler'] = dict()
+config['norm_sampler']['checkpoint'] = 'checkpoints/cvae_norm'
+config['norm_sampler']['device'] = config['device']
+config['norm_sampler']['resolution'] = 512
+config['norm_sampler']['cond_ae_static'] = config['cond_ae_static']
+config['norm_sampler']['cond_ae_body'] = config['cond_ae_body']
+
+config['norm_sampler']['cvae'] = dict()
+config['norm_sampler']['cvae']['device'] = config['device']
+config['norm_sampler']['cvae']['kernel_size'] = 7
+config['norm_sampler']['cvae']['input_features'] = 3 + 3 + 3
+config['norm_sampler']['cvae']['bottleneck_size'] = 64 * config['bottleneck_scale']
+config['norm_sampler']['cvae']['latent_dim'] = config['norm_sampler']['cvae']['bottleneck_size']
+
+block_setting = [
+    CNBlockConfig(32, 64, 3),
+    CNBlockConfig(64, 128, 3),
+    CNBlockConfig(128, 256, 3),
+    CNBlockConfig(256, config['norm_sampler']['cvae']['bottleneck_size'], 9),
+    CNBlockConfig(config['norm_sampler']['cvae']['bottleneck_size'], None, 3),
+]
+
+# 176 = latent_dim + the static and body bottlenecks it is concatenated with
+block_setting_reverse = [
+    CNBlockConfig(176, 256, 3),
+    CNBlockConfig(256, 128, 9),
+    CNBlockConfig(128, 64, 9),
+    CNBlockConfig(64, 32, 3),
+    CNBlockConfig(32, 3, 3),
+]
+
+config['norm_sampler']['cvae']['encoder_block_settings'] = block_setting
+config['norm_sampler']['cvae']['decoder_block_settings'] = block_setting_reverse

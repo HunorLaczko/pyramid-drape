@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--name', type=str)
 parser.add_argument('--config', type=str, default='configs.pyr')
 parser.add_argument('--debug', action='store_true')
+parser.add_argument('--sample-normals', action='store_true')
 parser.add_argument('-g', '--gpu', type=str, default='3')
 args = vars(parser.parse_args())
 
@@ -16,6 +17,12 @@ if args['debug']:
 else:
     config_module = importlib.import_module(args['config'])
     config = config_module.config
+
+if args['sample_normals']:
+    if 'norm_sampler' not in config:
+        raise SystemExit(f'{args["config"]} has no norm_sampler, the normal sampling model is only available for the non skirt garments')
+    # the ground truth normals are not read any more, they are sampled instead
+    config['signature'] = { s for s in config['signature'] if not s.startswith('uv_normals') }
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = args['gpu']
@@ -32,6 +39,7 @@ from torch.utils.data import DataLoader
 from utils.utils import UV2Mesh, group_inputs_for_levels, load_model
 from smpl.smpl_torch import SMPL
 from models.pyramid_model import Pyramid
+from utils.normal_sampling import NormalSampler
 
 
 uv2mesh = UV2Mesh(res=256, is_skirt=config['is_skirt'], is_smpl_orig=config['is_cape'])
@@ -59,6 +67,9 @@ def step(batch):
 
 def generate():
     for batch in tqdm(test_dataloader):
+        if normal_sampler is not None:
+            batch = normal_sampler(batch)
+
         with torch.inference_mode():
             mesh_pred = step(batch)
 
@@ -80,7 +91,10 @@ if __name__ == '__main__':
     load_model(model, 'checkpoints/' + config['name'], False)
     model.eval()
 
-    out_folder = f'{config["out_dir"]}/{config["name"]}'
+    normal_sampler = NormalSampler(config) if args['sample_normals'] else None
+
+    name = config['name'] + '_sampled_normals' if args['sample_normals'] else config['name']
+    out_folder = f'{config["out_dir"]}/{name}'
     os.makedirs(out_folder, exist_ok=True)
 
     generate()

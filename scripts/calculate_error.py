@@ -8,12 +8,15 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--name', type=str)
 parser.add_argument('--config', type=str, default='configs.pyr_skirt')
 parser.add_argument('--debug', action='store_true')
+parser.add_argument('--sample-normals', action='store_true')
 parser.add_argument('--iteration', type=str, default='')
 parser.add_argument('-g', '--gpu', type=str, default='1')
 args = vars(parser.parse_args())
 
 config_module = importlib.import_module(args['config'])
 config = config_module.config
+
+name = config['name'] + '_sampled_normals' if args['sample_normals'] else config['name']
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = config['gpu']
@@ -97,14 +100,14 @@ def calculate():
     print(f'Final error: {mean}')
 
     # save errors to a csv file
-    with open(f'{config["out_dir"]}/{config["name"]}.csv', 'w') as f:
+    with open(f'{config["out_dir"]}/{name}.csv', 'w') as f:
         for frame, error in errors:
             frame_str = ','.join(str(frame).split('_'))
             f.write(f'{frame_str},{error}\n')
 
 
 if __name__ == '__main__':
-    out_folder = f'{config["out_dir"]}/{config["name"]}'
+    out_folder = f'{config["out_dir"]}/{name}'
     os.makedirs(out_folder, exist_ok=True)
 
     frames_file = config['frames']
