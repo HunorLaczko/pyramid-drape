@@ -13,12 +13,12 @@
 
 ### Dataset 
 
-We use the [CLOTH3D](https://chalearnlap.cvc.uab.cat/dataset/38/description/) dataset. You can find a description of it on the link provided. For direct downloading the test set you can use this [link](https://158.109.8.102/CLOTH3D/Test/test_t1.tar.gz). (you might receive a https/ssl warning, you can ignore it and continue)
+We use the [CLOTH3D](https://chalearnlap.cvc.uab.es/dataset/38/description/) dataset. You can find a description of it on the link provided. For direct downloading the test set you can use this [link](https://chalearnlap.cvc.uab.cat/dataset/38/data/74/files/). (you have to be logged in)
 
-As described in the paper we register each garment to the SMPL body fo unify their topology. This registration information can be found at this [link](https://uab-my.sharepoint.com/:f:/g/personal/1648039_uab_cat/EpUP9kD47SVJoyXFbfKtOw8B5-4IUrKAEHVp_wm6lxihPA?e=FhRYVH).
+As described in the paper we register each garment to the SMPL body fo unify their topology. This registration information can be found at this [link](https://drive.google.com/file/d/1Xio0ejqfvNMSgqPcelE1YDwfq6bSP77W/view?usp=sharing).
 
 ### Checkpoints
-We provide two checkpoints for the final model, one for the non-skirt garments and one for the skirt-like garments. Please find them at the same [link](https://uab-my.sharepoint.com/:f:/g/personal/1648039_uab_cat/EpUP9kD47SVJoyXFbfKtOw8B5-4IUrKAEHVp_wm6lxihPA?e=FhRYVH). We provide two additional checkpoints that were further finetuned to improve sampling performance, in eachange for slightly higher reconstruction error. 
+We provide two checkpoints for the final model, one for the non-skirt garments and one for the skirt-like garments. Please find them at this [link](https://drive.google.com/drive/folders/1kAZ5VTfjD5RVqyj1IM_lozKwnt6GfBRZ?usp=sharing). We provide two additional checkpoints that were further finetuned to improve sampling performance, in eachange for slightly higher reconstruction error. 
 
 ### SMPL
 
